@@ -67,6 +67,10 @@ export const coursesApi = {
     console.log("coursesApi getCoursesWithPurchaseStatus", response);
     return response;
   },
+
+  getCourseById: async (id: string): Promise<Course> => {
+    return apiCall<Course>(`/courses/${id}`);
+  },
 };
 
 // Export de l'instance api pour purchaseApi
