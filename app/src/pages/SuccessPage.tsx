@@ -1,6 +1,7 @@
 // src/pages/SuccessPage.tsx
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { purchaseApi } from "../services/purchaseApi";
 
 interface SessionInfo {
   payment_status: string;
@@ -26,7 +27,29 @@ const SuccessPage: React.FC = () => {
     }
 
     // Vérifier le statut de la session
-    const checkSession = async () => {};
+    const checkSession = async () => {
+      const response = await purchaseApi.getCheckoutSession(sessionId);
+      console.log("Response from server:", response);
+
+      const { payment_intent, payment_status } = response;
+
+      if (!payment_intent) {
+        setPageState("invalid");
+        setErrorMessage("Session invalide ou non trouvée.");
+        return;
+      }
+
+      if (payment_status === "paid") {
+        setSessionInfo(response);
+        setPageState("success");
+      } else if (
+        payment_status === "unpaid" ||
+        payment_status === "requires_payment_method"
+      ) {
+        setPageState("error");
+        setErrorMessage("Le paiement a échoué ou n'a pas été effectué.");
+      }
+    };
 
     checkSession();
   }, [sessionId]);

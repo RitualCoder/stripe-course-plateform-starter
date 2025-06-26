@@ -1,44 +1,45 @@
+// src/components/ProtectedCourse.tsx
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { purchaseApi } from "../services/purchaseApi";
 import { useAuth } from "../contexts/AuthContext";
 
 interface ProtectedCourseProps {
-  courseId: string;
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
 
 export const ProtectedCourse: React.FC<ProtectedCourseProps> = ({
-  courseId,
   children,
   fallback,
 }) => {
+  const { courseId } = useParams<{ courseId: string }>();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAccess = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+    if (!courseId) {
+      setHasAccess(false);
+      setLoading(false);
+      return;
+    }
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
+    (async () => {
       try {
         const result = await purchaseApi.checkCourseAccess(courseId);
-        console.log("result", result);
         setHasAccess(result.hasAccess);
-      } catch (error) {
-        console.error("Erreur lors de la vérification d'accès:", error);
+      } catch {
         setHasAccess(false);
       } finally {
         setLoading(false);
       }
-    };
-
-    checkAccess();
+    })();
   }, [courseId, user]);
 
   if (loading) {
@@ -70,9 +71,7 @@ export const ProtectedCourse: React.FC<ProtectedCourseProps> = ({
   }
 
   if (!hasAccess) {
-    if (fallback) {
-      return <>{fallback}</>;
-    }
+    if (fallback) return <>{fallback}</>;
 
     return (
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
@@ -83,7 +82,7 @@ export const ProtectedCourse: React.FC<ProtectedCourseProps> = ({
           Vous devez acheter ce cours pour y accéder.
         </p>
         <button
-          onClick={() => navigate(`/courses/${courseId}/purchase`)}
+          onClick={() => navigate(`/courses`)}
           className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
         >
           Acheter le cours

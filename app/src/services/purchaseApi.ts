@@ -9,13 +9,13 @@ export const purchaseApi = {
   // Récupérer l'historique des achats de l'utilisateur
   getUserPurchases: async (): Promise<Purchase[]> => {
     const response = await api.get("/purchases");
-    return response.data;
+    return response;
   },
 
   // Récupérer les détails d'un achat
   getPurchaseById: async (purchaseId: string): Promise<Purchase> => {
     const response = await api.get(`/purchases/${purchaseId}`);
-    return response.data;
+    return response;
   },
 
   // Demander un remboursement
@@ -27,14 +27,27 @@ export const purchaseApi = {
       `/purchases/${purchaseId}/refund`,
       refundData
     );
-    return response.data;
+    return response;
   },
 
   // Vérifier l'accès à un cours
   checkCourseAccess: async (
     courseId: string
-  ): Promise<{ hasAccess: boolean; courseId: string; userId: string }> => {
-    // request to check access
-    return { hasAccess: true, courseId, userId: "1" };
+  ): Promise<{ hasAccess: boolean }> => {
+    const response = await api.get(`/courses/${courseId}/access`);
+    console.log("Response from checkCourseAccess:", response);
+    return { hasAccess: response };
+  },
+
+  /**
+   * Récupère une session Stripe par son ID
+   * @param sessionId L'ID de la session Stripe (ex: "cs_test_123…")
+   */
+  getCheckoutSession: async (
+    sessionId: string
+  ): Promise<{ url: string; [key: string]: any }> => {
+    const response = await api.get(`/stripe/session/${sessionId}`);
+    console.log("Response from getCheckoutSession:", response);
+    return response;
   },
 };

@@ -15,7 +15,7 @@ const CoursesPage: React.FC = () => {
   } = useQuery({
     queryKey: ["courses-with-purchase-status"],
     queryFn: coursesApi.getCoursesWithPurchaseStatus,
-    enabled: !!user, // Ne lance la requête que si l'utilisateur est connecté
+    enabled: !!user,
   });
 
   const handleLogout = () => {

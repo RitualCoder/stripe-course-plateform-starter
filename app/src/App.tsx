@@ -14,6 +14,8 @@ import RegisterForm from "./components/auth/RegisterForm";
 import CoursesPage from "./pages/CoursesPage";
 import PurchasesPage from "./pages/PurchasesPage";
 import CourseLearnPage from "./pages/CourseLearnPage";
+import SuccessPage from "./pages/SuccessPage";
+import { ProtectedCourse } from "./components/ProtectedCourse";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +33,7 @@ function App() {
         <Router>
           <div className="App">
             <Routes>
+              <Route path="/success" element={<SuccessPage />} />
               <Route path="/login" element={<LoginForm />} />
               <Route path="/register" element={<RegisterForm />} />
               <Route
@@ -45,7 +48,9 @@ function App() {
                 path="/courses/:courseId/learn"
                 element={
                   <ProtectedRoute>
-                    <CourseLearnPage />
+                    <ProtectedCourse>
+                      <CourseLearnPage />
+                    </ProtectedCourse>
                   </ProtectedRoute>
                 }
               />

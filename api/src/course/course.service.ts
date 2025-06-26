@@ -12,12 +12,23 @@ export class CourseService {
     });
   }
 
-  async findAllWithPurchaseStatus(userId: string) {
+  async findAllWithPurchaseStatus(userId: string): Promise<Course[]> {
     const courses = await this.prisma.course.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        Purchase: {
+          where: { userId },
+          select: { id: true, status: true },
+        },
+      },
     });
 
-    return courses;
+    return courses.map((course) => ({
+      ...course,
+      // find renvoie le 1er élément ou undefined → !! le cast en boolean
+      isPurchased: !!course.Purchase.find((p) => p.status === 'COMPLETED'),
+      Purchase: course.Purchase,
+    }));
   }
 
   async findOne(id: string): Promise<Course> {

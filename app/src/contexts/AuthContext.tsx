@@ -55,11 +55,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const getMe = async () => {
     const token = localStorage.getItem("auth_token");
-    console.log("getMe token : ", token);
     if (token) {
       try {
         const { user } = await authApi.me();
-        console.log("getMe user : ", user);
         setUser(user);
       } catch (error) {
         console.error("Erreur getMe:", error);

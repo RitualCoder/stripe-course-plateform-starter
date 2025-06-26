@@ -25,6 +25,27 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       navigate("/login");
       return;
     }
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/stripe/create-checkout-session`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ courseId: course.id }),
+      }
+    );
+
+    const data = await response.json();
+    console.log("Response from server:", data);
+
+    if (response.ok) {
+      window.location.href = data.url;
+    } else {
+      console.error("Error during purchase:", data);
+    }
   };
 
   const handleStartCourse = () => {

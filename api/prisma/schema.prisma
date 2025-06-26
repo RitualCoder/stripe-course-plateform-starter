@@ -9,10 +9,31 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String   @unique
-  password  String?
+  id       String  @id @default(cuid())
+  name     String?
+  email    String  @unique
+  password String?
+
+  stripeCustomerId String? @unique
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Purchase  Purchase[]
+}
+
+model Purchase {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId String
+
+  paymentIntentId String? @unique
+
+  status String @default("PENDING")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -23,6 +44,10 @@ model Course {
   description String?
   price       Float
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  stripeProductId String? @unique
+  stripePriceId   String? @unique
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Purchase  Purchase[]
 }

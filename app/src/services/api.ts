@@ -63,7 +63,9 @@ export const coursesApi = {
   },
 
   getCoursesWithPurchaseStatus: async (): Promise<Course[]> => {
-    return apiCall<Course[]>("/courses/with-purchase-status");
+    const response = await apiCall<Course[]>("/courses/with-purchase-status");
+    console.log("coursesApi getCoursesWithPurchaseStatus", response);
+    return response;
   },
 };
 
